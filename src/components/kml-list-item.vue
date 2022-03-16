@@ -1,8 +1,7 @@
 <template>
-  <div v-intersect="onIntersect">
+  <div class="kml-list-item" v-intersect="onIntersect">
     <v-list-item
       v-if="isIntersect"
-      class="kml-list-item"
       :style="{ '--image-height': imageHeight + 'px' }"
     >
       <kml-list-cell
@@ -62,8 +61,8 @@ export default {
     open(url) {
       window.open(url)
     },
-    onIntersect(entries) {
-      this.isIntersect = entries
+    onIntersect(entries, observer, isIntersecting) {
+      this.isIntersect = isIntersecting
     },
   },
 }
@@ -73,6 +72,7 @@ export default {
 .kml-list-item {
   border-style: solid none none none;
   border-width: 1px;
+  height: 110px;
   .is-name {
     position: sticky;
     left: 0;
