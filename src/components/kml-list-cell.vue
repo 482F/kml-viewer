@@ -1,8 +1,8 @@
 <template>
   <div class="cell" :style="{ '--width': width + 'px' }">
-    <v-menu open-on-hover offset-y>
+    <v-menu open-on-hover offset-y :disabled="!isOverflowed">
       <template v-slot:activator="{ on }">
-        <div v-on="on" class="inner">
+        <div ref="inner" v-on="on" class="inner">
           {{ content }}
         </div>
       </template>
@@ -16,8 +16,15 @@
 </template>
 
 <script>
+import throttle from 'lodash/throttle'
+
 export default {
   name: 'kml-list-cell',
+  data() {
+    return {
+      isOverflowed: false,
+    }
+  },
   props: {
     content: {
       type: String,
@@ -27,6 +34,23 @@ export default {
       type: Number,
       default: 100,
     },
+  },
+  mounted() {
+    new ResizeObserver(
+      throttle(async () => {
+        let timeouted = false
+        setTimeout(() => (timeouted = true), 1000)
+        while (!this.$refs.inner && !timeouted) {
+          await new Promise((resolve) => setTimeout(resolve, 10))
+        }
+
+        if (!this.$refs.inner) {
+          return
+        }
+        this.isOverflowed =
+          this.$refs.inner.clientWidth !== this.$refs.inner.scrollWidth
+      }, 100)
+    ).observe(this.$refs.inner)
   },
 }
 </script>
