@@ -19,12 +19,7 @@ import Resizer from './resizer.vue'
 
 export default {
   name: 'kml-list-header',
-  data() {
-    return {
-      w1: 0,
-      w2: 0,
-    }
-  },
+  data() {},
   components: {
     KmlListCell,
     Resizer,
