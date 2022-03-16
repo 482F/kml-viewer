@@ -10,7 +10,6 @@
         <div v-for="(line, i) of content.split('\n')" :key="i">
           {{ line }}
         </div>
-          {{[...content.matchAll(/https?:\/\/[^\s]+jpg/g)]}}
       </div>
     </v-menu>
   </div>

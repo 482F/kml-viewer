@@ -8,8 +8,8 @@
       :content="datum[name]"
     />
     <div class="images">
-      <div class="image">
-        <img v-for="src of imageSrcs" :key="src" :src="src" height="100" />
+      <div class="image-container" v-for="src of imageSrcs" :key="src">
+        <img class="image" @click="open(src)" :src="src" height="100" />
       </div>
     </div>
   </v-list-item>
@@ -37,6 +37,11 @@ export default {
       default: () => [],
     },
   },
+  methods: {
+    open(url) {
+      window.open(url)
+    },
+  },
 }
 </script>
 
@@ -52,6 +57,14 @@ export default {
     padding: 4px;
     display: flex;
     gap: 8px;
+    .image-container {
+      .image:hover {
+        position: absolute;
+        transform: scale(8);
+        z-index: 1;
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>
