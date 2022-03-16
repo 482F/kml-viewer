@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "482-js-utils": "https://github.com/482F/482-js-utils",
+    "482-vue-utils": "https://github.com/482F/482-vue-utils.git",
     "core-js": "^3.6.5",
     "lodash": "^4.17.21",
     "vue": "^2.6.11",
