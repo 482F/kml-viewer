@@ -1,17 +1,122 @@
 <template>
-  <div>
-    {{ rawKml }}
+  <div class="kml-viewer">
+    <v-list class="list">
+      <kml-list-header class="header" :columns.sync="columns" />
+      <kml-list-item
+        v-for="(row, i) of rows"
+        :key="i"
+        :columns="columns"
+        :datum="row"
+      />
+    </v-list>
   </div>
 </template>
 
 <script>
+import KmlListHeader from './kml-list-header.vue'
+import KmlListItem from './kml-list-item.vue'
+
 export default {
   name: 'kml-viewer',
+  components: {
+    KmlListHeader,
+    KmlListItem,
+  },
+  data() {
+    return {
+      rows: [],
+      columns: [],
+    }
+  },
   props: {
     rawKml: {
       type: String,
       default: '',
     },
   },
+  methods: {
+    parseKml(rawKml) {
+      const doc = new DOMParser().parseFromString(
+        rawKml,
+        'application/xhtml+xml'
+      )
+
+      const trimS = (str) => (str ?? '').replaceAll(/^[\s\n]+|[\s\n]+$/g, '')
+
+      const placemarks = [...doc.querySelectorAll('Placemark')]
+      const rows = placemarks.map((placemark) => {
+        const q = (query) => placemark.querySelector(query)
+        const qa = (query) => placemark.querySelectorAll(query)
+
+        const [name, description, styleUrl] = [
+          'name',
+          'description',
+          'styleUrl',
+        ].map((key) => q(key)?.textContent)
+
+        const [lng, lat] = trimS(q('Point > coordinates')?.textContent).split(
+          ','
+        )
+
+        const extendedData = [...qa('ExtendedData > Data')]
+          .map((datum) => {
+            const name = datum.getAttribute('name')
+            const content = trimS(datum.textContent)
+            return { [name]: content }
+          })
+          .reduce((all, part) => ({ ...all, ...part }), {})
+
+        return {
+          name,
+          description,
+          styleUrl,
+          lat,
+          lng,
+          ...extendedData,
+        }
+      })
+
+      const columns = Array.from(
+        new Set(rows.map((datum) => Object.keys(datum)).flat())
+      ).map((name) => ({ name, width: 100 }))
+
+      rows.forEach((row) => {
+        for (const column of columns) {
+          row[column.name] = (row[column.name] ?? '')
+            .replaceAll(',', '，')
+            .replaceAll('<br>', '\n')
+        }
+      })
+
+      this.rows = rows
+      this.columns = columns
+    },
+  },
+  watch: {
+    rawKml(newRawKml) {
+      this.parseKml(newRawKml)
+    },
+  },
 }
 </script>
+
+<style lang="scss" scoped>
+.kml-viewer {
+  overflow: scroll;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  > .list {
+    width: fit-content;
+    padding: 0;
+    .header {
+      padding-top: 24px;
+      background-color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
+}
+</style>

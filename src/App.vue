@@ -19,3 +19,19 @@ export default {
   }),
 }
 </script>
+
+<style lang="scss">
+* {
+  &::-webkit-scrollbar-track {
+    background-color: #eee;
+  }
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 30px;
+  }
+}
+</style>
