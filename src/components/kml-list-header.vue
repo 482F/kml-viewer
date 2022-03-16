@@ -45,7 +45,7 @@
           <v-list>
             <v-list-item
               v-for="column of columns"
-              :key="column"
+              :key="column.name"
               v-show="!column.show"
               @click="column.show = true"
               :ripple="false"
