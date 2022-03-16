@@ -22,7 +22,7 @@
           :key="src"
           @click="open(src)"
         >
-          <img class="image" :src="src" :height="imageHeight" />
+          <image-thumbnail :src="src" :thumbnail-height="imageHeight" />
         </div>
       </div>
     </v-list-item>
@@ -31,6 +31,7 @@
 
 <script>
 import KmlListCell from './kml-list-cell.vue'
+import ImageThumbnail from './image-thumbnail.vue'
 
 const imageHeight = 100
 
@@ -38,6 +39,7 @@ export default {
   name: 'kml-list-item',
   components: {
     KmlListCell,
+    ImageThumbnail,
   },
   data() {
     return {
@@ -99,14 +101,14 @@ export default {
       height: var(--image-height);
       cursor: pointer;
       .image {
-        pointer-events: none;
+        // pointer-events: none;
       }
-      &:hover {
-        z-index: 1;
-        .image {
-          transform: scale(8);
-        }
-      }
+      // &:hover {
+      //   z-index: 1;
+      //   .image {
+      //     transform: scale(8);
+      //   }
+      // }
     }
   }
 }

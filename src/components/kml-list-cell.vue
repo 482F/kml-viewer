@@ -17,6 +17,7 @@
 
 <script>
 import throttle from 'lodash/throttle'
+import { wait } from '482-js-utils'
 
 export default {
   name: 'kml-list-cell',
@@ -38,17 +39,12 @@ export default {
   mounted() {
     new ResizeObserver(
       throttle(async () => {
-        let timeouted = false
-        setTimeout(() => (timeouted = true), 1000)
-        while (!this.$refs.inner && !timeouted) {
-          await new Promise((resolve) => setTimeout(resolve, 10))
-        }
+        const inner = await wait(() => this.$refs.inner, 100, 1000)
 
-        if (!this.$refs.inner) {
+        if (!inner) {
           return
         }
-        this.isOverflowed =
-          this.$refs.inner.clientWidth !== this.$refs.inner.scrollWidth
+        this.isOverflowed = inner.clientWidth !== inner.scrollWidth
       }, 100)
     ).observe(this.$refs.inner)
   },
