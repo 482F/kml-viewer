@@ -6,6 +6,7 @@
         :animation="200"
         class="draggable"
         ghost-class="dragging"
+        handle=".cell"
       >
         <transition-group class="transition-group" type="transition">
           <resizer
@@ -115,6 +116,9 @@ export default {
     display: flex;
     width: fit-content;
   }
+  .left {
+    flex-shrink: 0;
+  }
   .right {
     flex-grow: 1;
     height: 48px;
@@ -133,35 +137,35 @@ export default {
         &.dragging {
           opacity: 0.8;
         }
+        .cell {
+          cursor: pointer;
+          background-color: white;
+          padding: 0 8px;
+          height: 48px;
+          transition: background-color 0.2s;
+          width: var(--width);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          &:hover {
+            background-color: lightgray;
+          }
+          &:not(:hover) {
+            .show-on-hover {
+              display: none;
+            }
+          }
+          .name {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        }
       }
       > .is-name {
         position: sticky;
         left: 0;
       }
-    }
-  }
-  .cell {
-    cursor: pointer;
-    background-color: white;
-    padding: 0 8px;
-    height: 48px;
-    transition: background-color 0.2s;
-    width: var(--width);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    &:hover {
-      background-color: lightgray;
-    }
-    &:not(:hover) {
-      .show-on-hover {
-        display: none;
-      }
-    }
-    .name {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
     }
   }
   .icon-button {
