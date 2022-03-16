@@ -50,7 +50,7 @@ export default {
       const trimS = (str) => (str ?? '').replaceAll(/^[\s\n]+|[\s\n]+$/g, '')
 
       const placemarks = [...doc.querySelectorAll('Placemark')]
-      const rows = placemarks.map((placemark) => {
+      const rows = placemarks.map((placemark, i) => {
         const q = (query) => placemark.querySelector(query)
         const qa = (query) => placemark.querySelectorAll(query)
 
@@ -73,6 +73,7 @@ export default {
           .reduce((all, part) => ({ ...all, ...part }), {})
 
         return {
+          index: (i + 1).toString(),
           name,
           description,
           styleUrl,
