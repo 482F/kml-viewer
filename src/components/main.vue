@@ -56,7 +56,8 @@ export default {
     },
     downloadCsv() {
       const csv = this.$refs.kmlViewer.toCsv()
-      const url = URL.createObjectURL(new Blob([csv], { type: 'text/plain' }))
+      const bom = new Uint8Array([0xef, 0xbb, 0xbf])
+      const url = URL.createObjectURL(new Blob([bom, csv], { type: 'text/plain' }))
       const a = document.createElement('a')
       a.href = url
       a.download = this.fileName.replace(/(?<=\.)[^.]+$/, 'csv')
