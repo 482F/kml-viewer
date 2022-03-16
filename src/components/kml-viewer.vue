@@ -91,6 +91,23 @@ export default {
       this.rows = rows
       this.columns = columns
     },
+    toCsv() {
+      return (
+        this.columns.map((column) => column.name).join(',') +
+        '\n' +
+        this.rows
+          .map((row) =>
+            this.columns
+              .map((column) =>
+                (row[column.name] ?? '')
+                  .replaceAll(',', '，')
+                  .replaceAll(/\n|<br>/g, '。')
+              )
+              .join(',')
+          )
+          .join('\n')
+      )
+    },
   },
   watch: {
     rawKml(newRawKml) {

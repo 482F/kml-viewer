@@ -1,18 +1,23 @@
 <template>
   <div class="f-main">
-    <div
-      class="input"
-      :class="{ 'is-drag-over': isDragOver }"
-      @click="$refs.input.click()"
-      @dragenter.prevent="isDragOver = true"
-      @dragover.prevent
-      @drop.stop.prevent="onDrop"
-      @dragleave.prevent="isDragOver = false"
-    >
-      <div>{{ fileName || 'kml ファイルを添付' }}</div>
-      <input ref="input" class="input-element" type="file" @input="onInput" />
+    <div class="buttons">
+      <button
+        class="button"
+        :class="{ 'is-drag-over': isDragOver }"
+        @click="$refs.input.click()"
+        @dragenter.prevent="isDragOver = true"
+        @dragover.prevent
+        @drop.stop.prevent="onDrop"
+        @dragleave.prevent="isDragOver = false"
+      >
+        <div>{{ fileName || 'kml ファイルを添付' }}</div>
+        <input ref="input" class="input-element" type="file" @input="onInput" />
+      </button>
+      <button v-if="rawKml" class="button" @click="downloadCsv">
+        <div>csv をダウンロード</div>
+      </button>
     </div>
-    <kml-viewer class="kml-viewer" :raw-kml="rawKml" />
+    <kml-viewer ref="kmlViewer" class="kml-viewer" :raw-kml="rawKml" />
   </div>
 </template>
 
@@ -49,6 +54,15 @@ export default {
       this.rawKml = await file.text()
       this.isDragOver = false
     },
+    downloadCsv() {
+      const csv = this.$refs.kmlViewer.toCsv()
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/plain' }))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = this.fileName.replace(/(?<=\.)[^.]+$/, 'csv')
+      a.click()
+      a.remove()
+    },
   },
 }
 </script>
@@ -60,32 +74,37 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  .input {
-    height: 48px;
-    flex-shrink: 0;
-    width: 100%;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 4px;
-    border-color: lightgray;
+  .buttons {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-    cursor: pointer;
-    &.is-drag-over {
-      background-color: #f8fcff;
-      border-style: dashed;
-      border-width: 2px;
-      border-color: #78a0ff;
+    gap: 8px;
+    width: 100%;
+    .button {
+      height: 48px;
+      width: 100%;
+      min-width: 0;
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 4px;
+      border-color: lightgray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      cursor: pointer;
+      &.is-drag-over {
+        background-color: #f8fcff;
+        border-style: dashed;
+        border-width: 2px;
+        border-color: #78a0ff;
+      }
+      .input-element {
+        display: none;
+      }
     }
-    .input-element {
-      display: none;
+    .kml-viewer {
+      flex-grow: 1;
+      min-height: 0;
     }
-  }
-  .kml-viewer {
-    flex-grow: 1;
-    min-height: 0;
   }
 }
 </style>
