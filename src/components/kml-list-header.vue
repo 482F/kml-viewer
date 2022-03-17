@@ -16,7 +16,7 @@
               v-show="column.show"
               :class="{ 'is-name': i === 0 }"
               direction="right"
-              @change="(value) => (column.width = value)"
+              @input="(value) => (column.width = value)"
               @dragstart.native="dragStart"
             >
               <div
