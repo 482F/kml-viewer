@@ -1,26 +1,29 @@
 <template>
-  <v-list-item
-    class="kml-list-item"
-    :style="{ '--image-height': imageHeight + 'px' }"
-  >
-    <kml-list-cell
-      v-for="({ name, width }, i) of columns"
-      :class="{ 'is-name': i === 0 }"
-      :key="name"
-      :width="width"
-      :content="datum[name]"
-    />
-    <div class="images">
-      <div
-        class="image-container"
-        v-for="src of imageSrcs"
-        :key="src"
-        @click="open(src)"
-      >
-        <img class="image" :src="src" :height="imageHeight" />
+  <div v-intersect="onIntersect">
+    <v-list-item
+      v-if="isIntersect"
+      class="kml-list-item"
+      :style="{ '--image-height': imageHeight + 'px' }"
+    >
+      <kml-list-cell
+        v-for="({ name, width }, i) of columns"
+        :class="{ 'is-name': i === 0 }"
+        :key="name"
+        :width="width"
+        :content="datum[name]"
+      />
+      <div class="images">
+        <div
+          class="image-container"
+          v-for="src of imageSrcs"
+          :key="src"
+          @click="open(src)"
+        >
+          <img class="image" :src="src" :height="imageHeight" />
+        </div>
       </div>
-    </div>
-  </v-list-item>
+    </v-list-item>
+  </div>
 </template>
 
 <script>
@@ -32,6 +35,11 @@ export default {
   name: 'kml-list-item',
   components: {
     KmlListCell,
+  },
+  data() {
+    return {
+      isIntersect: false,
+    }
   },
   props: {
     columns: {
@@ -53,6 +61,9 @@ export default {
   methods: {
     open(url) {
       window.open(url)
+    },
+    onIntersect(entries) {
+      this.isIntersect = entries
     },
   },
 }
