@@ -7,6 +7,7 @@
         :key="i"
         :columns="columns"
         :datum="row"
+        :image-srcs="createImageSrcs(row.description)"
       />
     </v-list>
   </div>
@@ -35,6 +36,11 @@ export default {
     },
   },
   methods: {
+    createImageSrcs(content) {
+      return [...(content || '').matchAll(/https?:\/\/[^\s]+jpg/g)].map(
+        (m) => m[0]
+      )
+    },
     parseKml(rawKml) {
       const doc = new DOMParser().parseFromString(
         rawKml,

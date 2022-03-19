@@ -10,6 +10,7 @@
         <div v-for="(line, i) of content.split('\n')" :key="i">
           {{ line }}
         </div>
+          {{[...content.matchAll(/https?:\/\/[^\s]+jpg/g)]}}
       </div>
     </v-menu>
   </div>
@@ -38,8 +39,6 @@ export default {
   flex-shrink: 0;
   width: var(--width);
   height: 48px;
-  border-style: solid none none none;
-  border-width: 1px;
   display: flex;
   align-items: center;
   .inner {
