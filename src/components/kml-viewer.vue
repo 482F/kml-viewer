@@ -1,9 +1,13 @@
 <template>
   <div class="kml-viewer">
     <v-list class="list">
-      <kml-list-header class="header" :columns.sync="columns" />
+      <kml-list-header
+        class="header"
+        :columns.sync="columns"
+        :sort-method.sync="sortMethod"
+      />
       <kml-list-item
-        v-for="(row, i) of rows"
+        v-for="(row, i) of sortedRows"
         :key="i"
         :columns="columns"
         :datum="row"
@@ -27,12 +31,33 @@ export default {
     return {
       rows: [],
       columns: [],
+      sortMethod: {
+        key: 'index',
+        order: 1,
+      },
     }
   },
   props: {
     rawKml: {
       type: String,
       default: '',
+    },
+  },
+  computed: {
+    sortedRows() {
+      return this.rows.slice().sort((a, b) => {
+        const key = this.sortMethod.key
+        const order = this.sortMethod.order
+        const aVal = Number(a[key]) || a[key]
+        const bVal = Number(b[key]) || b[key]
+        if (bVal < aVal) {
+          return 1 * order
+        } else if (aVal < bVal) {
+          return -1 * order
+        } else {
+          return 0
+        }
+      })
     },
   },
   methods: {

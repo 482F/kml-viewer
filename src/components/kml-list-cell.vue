@@ -58,6 +58,7 @@ export default {
 <style lang="scss" scoped>
 .cell {
   --width: 100px;
+  padding-left: 8px;
   background-color: white;
   flex-shrink: 0;
   width: var(--width);

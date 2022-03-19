@@ -73,6 +73,8 @@ export default {
   border-style: solid none none none;
   border-width: 1px;
   height: 110px;
+  display: flex;
+  justify-content: center;
   .is-name {
     position: sticky;
     left: 0;
