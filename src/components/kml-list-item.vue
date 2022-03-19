@@ -5,7 +5,8 @@
       :style="{ '--image-height': imageHeight + 'px' }"
     >
       <kml-list-cell
-        v-for="({ name, width }, i) of columns"
+        v-for="({ name, width, show }, i) of columns"
+        v-show="show"
         :class="{ 'is-name': i === 0 }"
         :key="name"
         :width="width"
@@ -75,6 +76,9 @@ export default {
   height: 110px;
   display: flex;
   justify-content: center;
+  > .v-list-item {
+    padding: 0;
+  }
   .is-name {
     position: sticky;
     left: 0;

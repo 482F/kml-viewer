@@ -110,7 +110,11 @@ export default {
 
       const columns = Array.from(
         new Set(rows.map((datum) => Object.keys(datum)).flat())
-      ).map((name) => ({ name, width: 100 }))
+      ).map((name) => ({
+        name,
+        width: 100,
+        show: true,
+      }))
 
       rows.forEach((row) => {
         for (const column of columns) {
@@ -158,8 +162,10 @@ export default {
   }
   > .list {
     width: fit-content;
+    min-width: 100%;
     padding: 0;
     .header {
+      padding: 0;
       padding-top: 24px;
       background-color: white;
       position: sticky;
