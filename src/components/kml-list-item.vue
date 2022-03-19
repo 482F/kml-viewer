@@ -1,5 +1,8 @@
 <template>
-  <v-list-item class="kml-list-item">
+  <v-list-item
+    class="kml-list-item"
+    :style="{ '--image-height': imageHeight + 'px' }"
+  >
     <kml-list-cell
       v-for="({ name, width }, i) of columns"
       :class="{ 'is-name': i === 0 }"
@@ -8,8 +11,13 @@
       :content="datum[name]"
     />
     <div class="images">
-      <div class="image-container" v-for="src of imageSrcs" :key="src">
-        <img class="image" @click="open(src)" :src="src" height="100" />
+      <div
+        class="image-container"
+        v-for="src of imageSrcs"
+        :key="src"
+        @click="open(src)"
+      >
+        <img class="image" :src="src" :height="imageHeight" />
       </div>
     </div>
   </v-list-item>
@@ -17,6 +25,8 @@
 
 <script>
 import KmlListCell from './kml-list-cell.vue'
+
+const imageHeight = 100
 
 export default {
   name: 'kml-list-item',
@@ -36,6 +46,9 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  computed: {
+    imageHeight: () => imageHeight,
   },
   methods: {
     open(url) {
@@ -58,11 +71,16 @@ export default {
     display: flex;
     gap: 8px;
     .image-container {
-      .image:hover {
-        position: absolute;
-        transform: scale(8);
+      height: var(--image-height);
+      cursor: pointer;
+      .image {
+        pointer-events: none;
+      }
+      &:hover {
         z-index: 1;
-        cursor: pointer;
+        .image {
+          transform: scale(8);
+        }
       }
     }
   }
