@@ -1,38 +1,47 @@
 <template>
   <v-list-item class="kml-list-header">
     <div class="left">
-      <template v-for="(column, i) of columns">
-        <resizer
-          v-show="column.show"
-          :key="column.name"
-          :class="{ 'is-name': i === 0 }"
-          :directions="['right']"
-          @change="(value) => (column.width = value)"
-        >
-          <div
-            class="cell"
-            @click="updateSortMethod(column)"
-            :content="column.name"
-            :style="{ '--width': column.width + 'px' }"
+      <draggable
+        :list="columns"
+        :animation="200"
+        class="draggable"
+        ghost-class="dragging"
+      >
+        <transition-group class="transition-group" type="transition">
+          <resizer
+            v-for="(column, i) of columns"
+            :key="column.name"
+            v-show="column.show"
+            :class="{ 'is-name': i === 0 }"
+            :directions="['right']"
+            @change="(value) => (column.width = value)"
+            @dragstart.native="dragStart"
           >
-            <div class="name">
-              {{ column.name }}
-            </div>
-            <v-icon class="icon" v-if="sortMethod.key === column.name">
-              {{
-                sortMethod.order === 1 ? 'mdi-chevron-up' : 'mdi-chevron-down'
-              }}
-            </v-icon>
-            <v-icon
-              class="icon show-on-hover"
-              v-else
-              @click="column.show = false"
+            <div
+              class="cell"
+              @click="updateSortMethod(column)"
+              :content="column.name"
+              :style="{ '--width': column.width + 'px' }"
             >
-              mdi-close
-            </v-icon>
-          </div>
-        </resizer>
-      </template>
+              <div class="name">
+                {{ column.name }}
+              </div>
+              <v-icon class="icon" v-if="sortMethod.key === column.name">
+                {{
+                  sortMethod.order === 1 ? 'mdi-chevron-up' : 'mdi-chevron-down'
+                }}
+              </v-icon>
+              <v-icon
+                class="icon show-on-hover"
+                v-else
+                @click="column.show = false"
+              >
+                mdi-close
+              </v-icon>
+            </div>
+          </resizer>
+        </transition-group>
+      </draggable>
     </div>
     <div class="right">
       <v-menu offset-y>
@@ -56,16 +65,19 @@
         </div>
       </v-menu>
     </div>
+    <div ref="ghost" />
   </v-list-item>
 </template>
 
 <script>
 import Resizer from './resizer.vue'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'kml-list-header',
   data() {},
   components: {
+    draggable,
     Resizer,
   },
   props: {
@@ -83,6 +95,9 @@ export default {
       const key = column.name
       const order = this.sortMethod.key === key ? this.sortMethod.order * -1 : 1
       this.$emit('update:sort-method', { key, order })
+    },
+    dragStart(e) {
+      e.dataTransfer.setDragImage(this.$refs.ghost, 0, 0)
     },
   },
 }
@@ -109,6 +124,20 @@ export default {
       background-color: white;
     }
   }
+  .draggable {
+    > .transition-group {
+      display: flex;
+      > .resizer {
+        &.dragging {
+          opacity: 0.8;
+        }
+      }
+      > .is-name {
+        position: sticky;
+        left: 0;
+      }
+    }
+  }
   .cell {
     cursor: pointer;
     background-color: white;
@@ -122,6 +151,11 @@ export default {
     &:hover {
       background-color: lightgray;
     }
+    &:not(:hover) {
+      .show-on-hover {
+        display: none;
+      }
+    }
     .name {
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -131,22 +165,6 @@ export default {
   .icon-button {
     position: sticky;
     right: 0;
-  }
-}
-</style>
-
-<style lang="scss" scoped>
-.kml-list-header {
-  .is-name {
-    position: sticky;
-    left: 0;
-  }
-  .cell {
-    &:not(:hover) {
-      .show-on-hover {
-        display: none;
-      }
-    }
   }
 }
 </style>
