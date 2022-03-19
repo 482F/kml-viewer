@@ -34,7 +34,7 @@
               <v-icon
                 class="icon show-on-hover"
                 v-else
-                @click="column.show = false"
+                @click.stop="column.show = false"
               >
                 mdi-close
               </v-icon>
