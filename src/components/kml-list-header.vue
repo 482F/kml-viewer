@@ -75,7 +75,9 @@ import draggable from 'vuedraggable'
 
 export default {
   name: 'kml-list-header',
-  data() {},
+  data() {
+    return {}
+  },
   components: {
     draggable,
     Resizer,

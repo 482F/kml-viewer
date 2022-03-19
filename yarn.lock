@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"482-js-utils@https://github.com/482F/482-js-utils":
+  version "1.0.0"
+  resolved "https://github.com/482F/482-js-utils#591b8307417d71b5dc453b62fbbc79746e8f99db"
+
 "@ampproject/remapping@^2.1.0":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.1.2.tgz#4edca94973ded9630d20101cd8559cedb8d8bd34"
