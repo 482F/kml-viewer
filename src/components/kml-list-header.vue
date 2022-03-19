@@ -14,7 +14,7 @@
             :key="column.name"
             v-show="column.show"
             :class="{ 'is-name': i === 0 }"
-            :directions="['right']"
+            direction="right"
             @change="(value) => (column.width = value)"
             @dragstart.native="dragStart"
           >
@@ -71,8 +71,10 @@
 </template>
 
 <script>
-import Resizer from './resizer.vue'
 import draggable from 'vuedraggable'
+
+import Utils from '482-vue-utils'
+const Resizer = Utils.Resizer
 
 export default {
   name: 'kml-list-header',
