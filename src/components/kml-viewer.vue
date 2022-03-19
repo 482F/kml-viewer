@@ -74,39 +74,68 @@ export default {
 
       const trimS = (str) => (str ?? '').replaceAll(/^[\s\n]+|[\s\n]+$/g, '')
 
-      const placemarks = [...doc.querySelectorAll('Placemark')]
-      const rows = placemarks.map((placemark, i) => {
-        const q = (query) => placemark.querySelector(query)
-        const qa = (query) => placemark.querySelectorAll(query)
-
-        const [name, description, styleUrl] = [
-          'name',
-          'description',
-          'styleUrl',
-        ].map((key) => q(key)?.textContent)
-
-        const [lng, lat] = trimS(q('Point > coordinates')?.textContent).split(
-          ','
-        )
-
-        const extendedData = [...qa('ExtendedData > Data')]
-          .map((datum) => {
-            const name = datum.getAttribute('name')
-            const content = trimS(datum.textContent)
-            return { [name]: content }
+      const folders = (() => {
+        const folders = [...doc.querySelectorAll('Folder')]
+        console.log(folders)
+        if (folders.length) {
+          return folders.map((folder) => {
+            const name = trimS(folder.querySelector('name').textContent)
+            return {
+              name,
+              element: folder,
+            }
           })
-          .reduce((all, part) => ({ ...all, ...part }), {})
-
-        return {
-          index: (i + 1).toString(),
-          name,
-          description,
-          styleUrl,
-          lat,
-          lng,
-          ...extendedData,
+        } else {
+          return [
+            {
+              name: null,
+              element: doc,
+            },
+          ]
         }
-      })
+      })()
+      let i = 1
+      const rows = folders
+        .map((folder) => {
+          const placemarks = [...folder.element.querySelectorAll('Placemark')]
+          return placemarks.map((placemark) => {
+            const q = (query) => placemark.querySelector(query)
+            const qa = (query) => placemark.querySelectorAll(query)
+
+            const [name, description, styleUrl] = [
+              'name',
+              'description',
+              'styleUrl',
+            ].map((key) => q(key)?.textContent)
+
+            const [lng, lat] = trimS(
+              q('Point > coordinates')?.textContent
+            ).split(',')
+
+            const extendedData = [...qa('ExtendedData > Data')]
+              .map((datum) => {
+                const name = datum.getAttribute('name')
+                const content = trimS(datum.textContent)
+                return { [name]: content }
+              })
+              .reduce((all, part) => ({ ...all, ...part }), {})
+            const row = {
+              index: (i++).toString(),
+              name,
+              description,
+              styleUrl,
+              lat,
+              lng,
+              ...extendedData,
+            }
+
+            if (folder.name) {
+              row.folderName = folder.name
+            }
+            return row
+          })
+        })
+        .flat()
 
       const columns = Array.from(
         new Set(rows.map((datum) => Object.keys(datum)).flat())
