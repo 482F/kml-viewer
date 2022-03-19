@@ -12,6 +12,9 @@
         :width="width"
         :content="datum[name]"
       />
+      <v-btn icon @click="openMap">
+        <v-icon> mdi-earth</v-icon>
+      </v-btn>
       <div class="images">
         <div
           class="image-container"
@@ -59,6 +62,11 @@ export default {
     imageHeight: () => imageHeight,
   },
   methods: {
+    openMap() {
+      this.open(
+        `https://www.google.com/maps/search/${this.datum.lat}+${this.datum.lng}`
+      )
+    },
     open(url) {
       window.open(url)
     },
