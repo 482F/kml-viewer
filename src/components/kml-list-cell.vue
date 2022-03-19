@@ -34,6 +34,7 @@ export default {
 <style lang="scss" scoped>
 .cell {
   --width: 100px;
+  background-color: white;
   flex-shrink: 0;
   width: var(--width);
   height: 48px;

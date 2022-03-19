@@ -1,7 +1,8 @@
 <template>
   <v-list-item>
     <kml-list-cell
-      v-for="{ name, width } of columns"
+      v-for="({ name, width }, i) of columns"
+      :class="{ 'is-name': i === 0 }"
       :key="name"
       :width="width"
       :content="datum[name]"
@@ -29,3 +30,10 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.is-name {
+  position: sticky;
+  left: 0;
+}
+</style>
