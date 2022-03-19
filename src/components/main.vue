@@ -9,11 +9,10 @@
       @drop.stop.prevent="onDrop"
       @dragleave.prevent="isDragOver = false"
     >
-      <div>kml ファイルを添付</div>
+      <div>{{ fileName || 'kml ファイルを添付' }}</div>
       <input ref="input" class="input-element" type="file" @input="onInput" />
     </div>
-    {{ file }}
-    <kml-viewer :raw-kml="rawKml" />
+    <kml-viewer class="kml-viewer" :raw-kml="rawKml" />
   </div>
 </template>
 
@@ -25,11 +24,13 @@ export default {
   components: {
     KmlViewer,
   },
-  data: () => ({
-    isDragOver: false,
-    rawKml: '',
-    file: null,
-  }),
+  data() {
+    return {
+      isDragOver: false,
+      rawKml: '',
+      fileName: '',
+    }
+  },
   methods: {
     onDrop(e) {
       const file = [...e.dataTransfer.files][0]
@@ -44,6 +45,7 @@ export default {
       if (!file) {
         this.rawKml = ''
       }
+      this.fileName = file.name
       this.rawKml = await file.text()
       this.isDragOver = false
     },
@@ -53,11 +55,14 @@ export default {
 
 <style lang="scss" scoped>
 .f-main {
-  padding: 4rem;
+  padding: 2rem;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   .input {
     height: 48px;
+    flex-shrink: 0;
     width: 100%;
     border-style: solid;
     border-width: 1px;
@@ -69,14 +74,18 @@ export default {
     user-select: none;
     cursor: pointer;
     &.is-drag-over {
-      background-color: #F8FCFF;
+      background-color: #f8fcff;
       border-style: dashed;
       border-width: 2px;
-      border-color: #78A0FF;
+      border-color: #78a0ff;
     }
     .input-element {
       display: none;
     }
+  }
+  .kml-viewer {
+    flex-grow: 1;
+    min-height: 0;
   }
 }
 </style>
