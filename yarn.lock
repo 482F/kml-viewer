@@ -8,7 +8,7 @@
 
 "482-vue-utils@https://github.com/482F/482-vue-utils.git":
   version "0.1.0"
-  resolved "https://github.com/482F/482-vue-utils.git#005a7365d7e47708b6e57653f3ef11999c6fff75"
+  resolved "https://github.com/482F/482-vue-utils.git#a3da400217f3900ea523855009445abc4ebf61dd"
   dependencies:
     core-js "^3.6.5"
     lodash "^4.17.21"
