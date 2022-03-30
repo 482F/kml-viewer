@@ -7,7 +7,7 @@
         :sort-method.sync="sortMethod"
       />
       <kml-list-item
-        v-for="(row, i) of sortedRows"
+        v-for="(row, i) of rows"
         :key="i"
         :columns="columns"
         :datum="row"
@@ -41,23 +41,6 @@ export default {
     rawKml: {
       type: String,
       default: '',
-    },
-  },
-  computed: {
-    sortedRows() {
-      return this.rows.slice().sort((a, b) => {
-        const key = this.sortMethod.key
-        const order = this.sortMethod.order
-        const aVal = Number(a[key]) || a[key]
-        const bVal = Number(b[key]) || b[key]
-        if (bVal < aVal) {
-          return 1 * order
-        } else if (aVal < bVal) {
-          return -1 * order
-        } else {
-          return 0
-        }
-      })
     },
   },
   methods: {
@@ -177,6 +160,24 @@ export default {
   watch: {
     rawKml(newRawKml) {
       this.parseKml(newRawKml)
+    },
+    sortMethod: {
+      deep: true,
+      handler() {
+        this.rows.sort((a, b) => {
+          const key = this.sortMethod.key
+          const order = this.sortMethod.order
+          const aVal = Number(a[key]) || a[key]
+          const bVal = Number(b[key]) || b[key]
+          if (bVal < aVal) {
+            return 1 * order
+          } else if (aVal < bVal) {
+            return -1 * order
+          } else {
+            return 0
+          }
+        })
+      },
     },
   },
 }
