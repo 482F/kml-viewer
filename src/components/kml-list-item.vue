@@ -1,7 +1,8 @@
 <template>
-  <div class="kml-list-item" v-intersect="onIntersect">
+  <div tabindex="-1" class="kml-list-item" v-intersect="onIntersect">
     <v-list-item
       v-if="isIntersect"
+      tabindex=""
       :style="{ '--image-height': imageHeight + 'px' }"
     >
       <kml-list-cell
