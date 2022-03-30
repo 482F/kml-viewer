@@ -8,6 +8,7 @@
       />
       <kml-list-item
         v-for="(row, i) of rows"
+        v-show="searcher(row)"
         :key="i"
         :columns="columns"
         :datum="row"
@@ -41,6 +42,10 @@ export default {
     rawKml: {
       type: String,
       default: '',
+    },
+    searcher: {
+      type: Function,
+      default: () => true,
     },
   },
   methods: {
@@ -196,7 +201,6 @@ export default {
     padding: 0;
     .header {
       padding: 0;
-      padding-top: 24px;
       background-color: white;
       position: sticky;
       top: 0;
