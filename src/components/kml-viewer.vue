@@ -6,7 +6,7 @@
         :columns.sync="columns"
         :sort-method.sync="sortMethod"
       />
-      <v-progress-circular v-show="processing" indeterminate />
+      <v-progress-linear v-show="processing" :value="progress * 100" />
       <kml-list-item
         v-for="(row, i) of rows"
         v-show="searcher(row)"
@@ -36,6 +36,7 @@ export default {
       rows: [],
       columns: [],
       processing: false,
+      progress: 0,
       sortMethod: {
         key: 'index',
         order: 1,
@@ -89,6 +90,8 @@ export default {
         })()
         let i = 1
         const rows = []
+        const length = [...doc.querySelectorAll('Placemark')].length
+
         for (const folder of folders) {
           const placemarks = [...folder.element.querySelectorAll('Placemark')]
           for (const placemark of placemarks) {
@@ -105,7 +108,15 @@ export default {
               .split(',')
               .map(Number)
 
-            const { prefecture, city } = await openReverseGeocoder([lng, lat])
+            const { prefecture, city } = await openReverseGeocoder([
+              lng ?? 0,
+              lat ?? 0,
+            ]).catch((e) => {
+              if (e.message === 'Error: Request failed with status code 404') {
+                return { prefecture: '', city: '' }
+              }
+              throw e
+            })
 
             const extendedData = [...qa('ExtendedData > Data')]
               .map((datum) => {
@@ -115,7 +126,7 @@ export default {
               })
               .reduce((all, part) => ({ ...all, ...part }), {})
             const row = {
-              index: (i++).toString(),
+              index: i++,
               name,
               description,
               styleUrl,
@@ -130,6 +141,8 @@ export default {
               row.folderName = folder.name
             }
             rows.push(row)
+
+            this.progress = i / length
           }
         }
 
@@ -143,7 +156,7 @@ export default {
 
         rows.forEach((row) => {
           for (const column of columns) {
-            row[column.name] = (row[column.name] ?? '')
+            row[column.name] = (row[column.name]?.toString?.() ?? '')
               .replaceAll(',', '，')
               .replaceAll('<br>', '\n')
           }
@@ -218,12 +231,6 @@ export default {
       position: sticky;
       top: 0;
       z-index: 1;
-    }
-    div[role='progressbar'] {
-      position: absolute;
-      left: 0;
-      right: 0;
-      margin: auto;
     }
   }
 }
