@@ -7,9 +7,19 @@
         </div>
       </template>
       <div class="kml-list-cell-tooltip">
-        <div v-for="(line, i) of content.split('\n')" :key="i">
-          {{ line }}
-        </div>
+        <span v-for="(datum, i) of separatedContent" :key="i">
+          <span v-if="datum.type === 'text'">
+            {{ datum.value }}
+          </span>
+          <a
+            v-else-if="datum.type === 'link'"
+            :href="datum.value"
+            target="_blank"
+          >
+            {{ datum.value }}
+          </a>
+          <br v-else-if="datum.type === 'newline'" />
+        </span>
       </div>
     </v-menu>
   </div>
@@ -34,6 +44,44 @@ export default {
     width: {
       type: Number,
       default: 100,
+    },
+  },
+  computed: {
+    separatedContent() {
+      let addedIndex = 0
+      const separatedContent = []
+
+      const matches = [
+        ...this.content.matchAll(
+          /https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+/g
+        ),
+      ]
+
+      const pushText = (value) => {
+        const lines = value.split(/\n|\\n/)
+        lines.forEach((line, i) => {
+          if (i !== 0) {
+            separatedContent.push({ type: 'newline' })
+          }
+          separatedContent.push({
+            value: line,
+            type: 'text',
+          })
+        })
+      }
+
+      for (const match of matches) {
+        const { 0: link, index } = match
+        pushText(this.content.slice(addedIndex, index))
+        const endOfLink = index + link.length
+        separatedContent.push({
+          value: this.content.slice(index, endOfLink),
+          type: 'link',
+        })
+        addedIndex = endOfLink
+      }
+      pushText(this.content.slice(addedIndex, this.content.length))
+      return separatedContent
     },
   },
   mounted() {
