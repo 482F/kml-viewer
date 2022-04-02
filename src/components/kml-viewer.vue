@@ -149,6 +149,7 @@ export default {
         this.columns.map((column) => column.name).join(',') +
         '\n' +
         this.rows
+          .filter(this.searcher)
           .map((row) =>
             this.columns
               .map((column) =>
