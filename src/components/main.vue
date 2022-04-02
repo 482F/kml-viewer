@@ -17,16 +17,24 @@
         <div>csv をダウンロード</div>
       </button>
     </div>
-    <kml-viewer ref="kmlViewer" class="kml-viewer" :raw-kml="rawKml" />
+    <search class="search" :searcher.sync="searcher" />
+    <kml-viewer
+      ref="kmlViewer"
+      class="kml-viewer"
+      :raw-kml="rawKml"
+      :searcher="searcher"
+    />
   </div>
 </template>
 
 <script>
+import Search from './search.vue'
 import KmlViewer from './kml-viewer.vue'
 
 export default {
   name: 'main-component',
   components: {
+    Search,
     KmlViewer,
   },
   data() {
@@ -34,6 +42,7 @@ export default {
       isDragOver: false,
       rawKml: '',
       fileName: '',
+      searcher: () => true,
     }
   },
   methods: {
@@ -57,7 +66,9 @@ export default {
     downloadCsv() {
       const csv = this.$refs.kmlViewer.toCsv()
       const bom = new Uint8Array([0xef, 0xbb, 0xbf])
-      const url = URL.createObjectURL(new Blob([bom, csv], { type: 'text/plain' }))
+      const url = URL.createObjectURL(
+        new Blob([bom, csv], { type: 'text/plain' })
+      )
       const a = document.createElement('a')
       a.href = url
       a.download = this.fileName.replace(/(?<=\.)[^.]+$/, 'csv')
@@ -75,6 +86,7 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   .buttons {
     display: flex;
     gap: 8px;
@@ -101,6 +113,9 @@ export default {
       .input-element {
         display: none;
       }
+    }
+    .search {
+      flex-grow: 0;
     }
     .kml-viewer {
       flex-grow: 1;
