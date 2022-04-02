@@ -114,13 +114,10 @@ export default {
         display: none;
       }
     }
-    .search {
-      flex-grow: 0;
-    }
-    .kml-viewer {
-      flex-grow: 1;
-      min-height: 0;
-    }
+  }
+  .kml-viewer {
+    flex-grow: 1;
+    min-height: 0;
   }
 }
 </style>
