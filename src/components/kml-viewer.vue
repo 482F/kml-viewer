@@ -6,6 +6,7 @@
         :columns.sync="columns"
         :sort-method.sync="sortMethod"
       />
+      <v-progress-circular v-show="processing" indeterminate />
       <kml-list-item
         v-for="(row, i) of rows"
         v-show="searcher(row)"
@@ -19,6 +20,8 @@
 </template>
 
 <script>
+import { openReverseGeocoder } from '@geolonia/open-reverse-geocoder'
+
 import KmlListHeader from './kml-list-header.vue'
 import KmlListItem from './kml-list-item.vue'
 
@@ -32,6 +35,7 @@ export default {
     return {
       rows: [],
       columns: [],
+      processing: false,
       sortMethod: {
         key: 'index',
         order: 1,
@@ -54,39 +58,40 @@ export default {
         (m) => m[0]
       )
     },
-    parseKml(rawKml) {
-      const doc = new DOMParser().parseFromString(
-        rawKml,
-        'application/xhtml+xml'
-      )
+    async parseKml(rawKml) {
+      this.processing = true
+      try {
+        const doc = new DOMParser().parseFromString(
+          rawKml,
+          'application/xhtml+xml'
+        )
 
-      const trimS = (str) => (str ?? '').replaceAll(/^[\s\n]+|[\s\n]+$/g, '')
+        const trimS = (str) => (str ?? '').replaceAll(/^[\s\n]+|[\s\n]+$/g, '')
 
-      const folders = (() => {
-        const folders = [...doc.querySelectorAll('Folder')]
-        console.log(folders)
-        if (folders.length) {
-          return folders.map((folder) => {
-            const name = trimS(folder.querySelector('name').textContent)
-            return {
-              name,
-              element: folder,
-            }
-          })
-        } else {
-          return [
-            {
-              name: null,
-              element: doc,
-            },
-          ]
-        }
-      })()
-      let i = 1
-      const rows = folders
-        .map((folder) => {
+        const folders = (() => {
+          const folders = [...doc.querySelectorAll('Folder')]
+          if (folders.length) {
+            return folders.map((folder) => {
+              const name = trimS(folder.querySelector('name').textContent)
+              return {
+                name,
+                element: folder,
+              }
+            })
+          } else {
+            return [
+              {
+                name: null,
+                element: doc,
+              },
+            ]
+          }
+        })()
+        let i = 1
+        const rows = []
+        for (const folder of folders) {
           const placemarks = [...folder.element.querySelectorAll('Placemark')]
-          return placemarks.map((placemark) => {
+          for (const placemark of placemarks) {
             const q = (query) => placemark.querySelector(query)
             const qa = (query) => placemark.querySelectorAll(query)
 
@@ -96,9 +101,11 @@ export default {
               'styleUrl',
             ].map((key) => q(key)?.textContent)
 
-            const [lng, lat] = trimS(
-              q('Point > coordinates')?.textContent
-            ).split(',')
+            const [lng, lat] = trimS(q('Point > coordinates')?.textContent)
+              .split(',')
+              .map(Number)
+
+            const { prefecture, city } = await openReverseGeocoder([lng, lat])
 
             const extendedData = [...qa('ExtendedData > Data')]
               .map((datum) => {
@@ -112,6 +119,8 @@ export default {
               name,
               description,
               styleUrl,
+              prefecture,
+              city,
               lat,
               lng,
               ...extendedData,
@@ -120,29 +129,32 @@ export default {
             if (folder.name) {
               row.folderName = folder.name
             }
-            return row
-          })
-        })
-        .flat()
-
-      const columns = Array.from(
-        new Set(rows.map((datum) => Object.keys(datum)).flat())
-      ).map((name) => ({
-        name,
-        width: 100,
-        show: true,
-      }))
-
-      rows.forEach((row) => {
-        for (const column of columns) {
-          row[column.name] = (row[column.name] ?? '')
-            .replaceAll(',', '，')
-            .replaceAll('<br>', '\n')
+            rows.push(row)
+          }
         }
-      })
 
-      this.rows = rows
-      this.columns = columns
+        const columns = Array.from(
+          new Set(rows.map((datum) => Object.keys(datum)).flat())
+        ).map((name) => ({
+          name,
+          width: 100,
+          show: true,
+        }))
+
+        rows.forEach((row) => {
+          for (const column of columns) {
+            row[column.name] = (row[column.name] ?? '')
+              .replaceAll(',', '，')
+              .replaceAll('<br>', '\n')
+          }
+        })
+
+        this.rows = rows
+        this.columns = columns
+      } catch (e) {
+        console.error(e)
+      }
+      this.processing = false
     },
     toCsv() {
       return (
@@ -206,6 +218,12 @@ export default {
       position: sticky;
       top: 0;
       z-index: 1;
+    }
+    div[role='progressbar'] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: auto;
     }
   }
 }
