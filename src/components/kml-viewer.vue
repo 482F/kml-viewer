@@ -88,12 +88,13 @@ export default {
             ]
           }
         })()
-        let i = 1
+        let allIndex = 1
         const rows = []
         const length = [...doc.querySelectorAll('Placemark')].length
 
         for (const folder of folders) {
           const placemarks = [...folder.element.querySelectorAll('Placemark')]
+          let inFolderIndex = 1
           for (const placemark of placemarks) {
             const q = (query) => placemark.querySelector(query)
             const qa = (query) => placemark.querySelectorAll(query)
@@ -126,7 +127,8 @@ export default {
               })
               .reduce((all, part) => ({ ...all, ...part }), {})
             const row = {
-              index: i++,
+              index: allIndex++,
+              inFolderIndex: inFolderIndex++,
               name,
               description,
               styleUrl,
@@ -142,7 +144,7 @@ export default {
             }
             rows.push(row)
 
-            this.progress = i / length
+            this.progress = allIndex / length
           }
         }
 
