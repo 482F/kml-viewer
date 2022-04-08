@@ -173,13 +173,14 @@ export default {
       this.processing = false
     },
     toCsv() {
+      const columns = this.columns.filter((column) => column.show)
       return (
-        this.columns.map((column) => column.name).join(',') +
+        columns.map((column) => column.name).join(',') +
         '\n' +
         this.rows
           .filter(this.searcher)
           .map((row) =>
-            this.columns
+            columns
               .map((column) =>
                 (row[column.name] ?? '')
                   .replaceAll(',', '，')
