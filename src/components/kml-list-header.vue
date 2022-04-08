@@ -48,7 +48,7 @@
         </draggable>
       </div>
       <div class="right">
-        <v-menu offset-y>
+        <v-menu offset-y :close-on-content-click="false">
           <template v-slot:activator="{ on }">
             <v-btn class="icon-button" icon v-on="on">
               <v-icon>mdi-menu</v-icon>
