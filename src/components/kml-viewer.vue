@@ -63,7 +63,7 @@ export default {
       this.processing = true
       try {
         const doc = new DOMParser().parseFromString(
-          rawKml,
+          rawKml.replaceAll('&', '＆'),
           'application/xhtml+xml'
         )
 
@@ -161,6 +161,7 @@ export default {
             row[column.name] = (row[column.name]?.toString?.() ?? '')
               .replaceAll(',', '，')
               .replaceAll('<br>', '\n')
+              .replaceAll('＆', '&')
           }
         })
 
