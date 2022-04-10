@@ -1,6 +1,9 @@
 <template>
   <div class="f-main">
     <div class="buttons">
+      <a :href="otherVersion.link">
+        <a-icon-button :icon="otherVersion.icon" :tooltip="otherVersion.name" />
+      </a>
       <button
         class="button"
         :class="{ 'is-drag-over': isDragOver }"
@@ -31,11 +34,14 @@
 import Search from './search.vue'
 import KmlViewer from './kml-viewer.vue'
 
+import AIconButton from '@atoms/a-icon-button.vue'
+
 export default {
   name: 'main-component',
   components: {
     Search,
     KmlViewer,
+    AIconButton,
   },
   data() {
     return {
@@ -44,6 +50,21 @@ export default {
       fileName: '',
       searcher: () => true,
     }
+  },
+  computed: {
+    otherVersion() {
+      return location.href.match(/latest\/$/)
+        ? {
+            link: location.href.replace(/latest\/$/, ''),
+            name: '安定版',
+            icon: 'mdi-scale-balance',
+          }
+        : {
+            link: location.href + 'latest/',
+            name: '最新版',
+            icon: 'mdi-scale-unbalanced',
+          }
+    },
   },
   methods: {
     onDrop(e) {
@@ -88,7 +109,12 @@ export default {
   flex-direction: column;
   gap: 0.5rem;
   .buttons {
+    > a {
+      color: black;
+      text-decoration: none;
+    }
     display: flex;
+    align-items: center;
     gap: 8px;
     width: 100%;
     .button {
