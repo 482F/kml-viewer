@@ -21,6 +21,7 @@
 
 <script>
 import { openReverseGeocoder } from '@geolonia/open-reverse-geocoder'
+import whichCountry from 'which-country'
 
 import KmlListHeader from './kml-list-header.vue'
 import KmlListItem from './kml-list-item.vue'
@@ -109,6 +110,8 @@ export default {
               .split(',')
               .map(Number)
 
+            const country = whichCountry([lng, lat])
+
             const { prefecture, city } = await openReverseGeocoder([
               lng ?? 0,
               lat ?? 0,
@@ -132,6 +135,7 @@ export default {
               name,
               description,
               styleUrl,
+              country,
               prefecture,
               city,
               lat,
