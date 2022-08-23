@@ -1,8 +1,13 @@
 <template>
   <div class="f-main">
     <div class="buttons">
-      <a :href="otherVersion.link">
-        <a-icon-button :icon="otherVersion.icon" :tooltip="otherVersion.name" />
+      <a class="version-icon" :href="version.other.link">
+        <a-icon-button class="icon current" :icon="version.current.icon" />
+        <a-icon-button
+          class="icon other"
+          :icon="version.other.icon"
+          :tooltip="version.other.name + 'へ'"
+        />
       </a>
       <button
         class="button"
@@ -52,18 +57,21 @@ export default {
     }
   },
   computed: {
-    otherVersion() {
+    version() {
+      const stable = {
+        link: location.href.replace(/latest\/$/, ''),
+        name: '安定版',
+        icon: 'mdi-scale-balance',
+      }
+
+      const latest = {
+        link: location.href + 'latest/',
+        name: '最新版',
+        icon: 'mdi-scale-unbalanced',
+      }
       return location.href.match(/latest\/$/)
-        ? {
-            link: location.href.replace(/latest\/$/, ''),
-            name: '安定版',
-            icon: 'mdi-scale-balance',
-          }
-        : {
-            link: location.href + 'latest/',
-            name: '最新版',
-            icon: 'mdi-scale-unbalanced',
-          }
+        ? { current: latest, other: stable }
+        : { current: stable, other: latest }
     },
   },
   methods: {
@@ -112,6 +120,23 @@ export default {
     > a {
       color: black;
       text-decoration: none;
+    }
+    > .version-icon {
+      position: relative;
+      > .other {
+        position: absolute;
+        left: 0;
+      }
+      &:hover {
+        > .current {
+          visibility: hidden;
+        }
+      }
+      &:not(:hover) {
+        > .other {
+          visibility: hidden;
+        }
+      }
     }
     display: flex;
     align-items: center;
