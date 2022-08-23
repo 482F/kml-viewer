@@ -22,6 +22,7 @@
 <script>
 import { openReverseGeocoder } from '@geolonia/open-reverse-geocoder'
 import whichCountry from 'which-country'
+import * as XLSX from 'xlsx'
 
 import KmlListHeader from './kml-list-header.vue'
 import KmlListItem from './kml-list-item.vue'
@@ -175,6 +176,13 @@ export default {
         console.error(e)
       }
       this.processing = false
+    },
+    toSheet() {
+      const json = this.rows.filter(this.searcher)
+      const columns = this.columns
+        .filter((column) => column.show)
+        .map((column) => column.name)
+      return XLSX.utils.json_to_sheet(json, { header: columns })
     },
     toCsv() {
       const columns = this.columns.filter((column) => column.show)
