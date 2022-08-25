@@ -21,9 +21,14 @@
         <div>{{ fileName || 'kml ファイルを添付' }}</div>
         <input ref="input" class="input-element" type="file" @input="onInput" />
       </button>
-      <button v-if="rawKml" class="button" @click="downloadCsv">
-        <div>csv をダウンロード</div>
-      </button>
+      <template v-if="rawKml">
+        <button class="button" @click="downloadCsv">
+          <div>csv をダウンロード</div>
+        </button>
+        <button class="button" @click="downloadXlsx">
+          <div>xlsx をダウンロード</div>
+        </button>
+      </template>
     </div>
     <search class="search" :searcher.sync="searcher" />
     <kml-viewer
@@ -36,6 +41,8 @@
 </template>
 
 <script>
+import * as XLSX from 'xlsx'
+
 import Search from './search.vue'
 import KmlViewer from './kml-viewer.vue'
 
@@ -73,6 +80,9 @@ export default {
         ? { current: latest, other: stable }
         : { current: stable, other: latest }
     },
+    downloadFileName() {
+      return this.fileName.replace(/\.[^.]+$/, '')
+    },
   },
   methods: {
     onDrop(e) {
@@ -92,6 +102,12 @@ export default {
       this.rawKml = await file.text()
       this.isDragOver = false
     },
+    downloadXlsx() {
+      const sheet = this.$refs.kmlViewer.toSheet()
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1')
+      XLSX.writeFile(workbook, this.downloadFileName + '.xlsx')
+    },
     downloadCsv() {
       const csv = this.$refs.kmlViewer.toCsv()
       const bom = new Uint8Array([0xef, 0xbb, 0xbf])
@@ -100,7 +116,7 @@ export default {
       )
       const a = document.createElement('a')
       a.href = url
-      a.download = this.fileName.replace(/(?<=\.)[^.]+$/, 'csv')
+      a.download = this.downloadFileName + '.csv'
       a.click()
       a.remove()
     },
