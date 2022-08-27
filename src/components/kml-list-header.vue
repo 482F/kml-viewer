@@ -8,6 +8,8 @@
           class="draggable"
           ghost-class="dragging"
           handle=".cell"
+          @start="$emit('column-drag-start', $event.item.innerText)"
+          @end="$emit('column-drag-end', $event.item.innerText)"
         >
           <transition-group class="transition-group" type="transition">
             <resizer

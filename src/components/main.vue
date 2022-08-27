@@ -30,12 +30,18 @@
         </button>
       </template>
     </div>
-    <search class="search" :searcher.sync="searcher" />
+    <search
+      class="search"
+      :dragging-column="draggingColumn"
+      :searcher.sync="searcher"
+    />
     <kml-viewer
       ref="kmlViewer"
       class="kml-viewer"
       :raw-kml="rawKml"
       :searcher="searcher"
+      @column-drag-start="draggingColumn = $event"
+      @column-drag-end="draggingColumn = undefined"
     />
   </div>
 </template>
@@ -60,6 +66,7 @@ export default {
       isDragOver: false,
       rawKml: '',
       fileName: '',
+      draggingColumn: undefined,
       searcher: () => true,
     }
   },

@@ -6,6 +6,8 @@
       placeholder="検索"
       v-model="searchText"
       clearable
+      @drop="onDrop"
+      @dragover.prevent
     >
       <template v-slot:prepend>
         <v-menu
@@ -56,7 +58,8 @@ const helps = [
   },
   {
     code: 'description:^$|無し',
-    description: 'description に「無し」が含まれる、もしくは description が空欄である',
+    description:
+      'description に「無し」が含まれる、もしくは description が空欄である',
   },
   {
     code: 'description: -^$',
@@ -82,6 +85,10 @@ export default {
     }
   },
   props: {
+    draggingColumn: {
+      type: String,
+      default: undefined,
+    },
     searcher: {
       type: Function,
       required: true,
@@ -89,6 +96,14 @@ export default {
   },
   computed: {
     helps: () => helps,
+  },
+  methods: {
+    onDrop() {
+      if (!this.draggingColumn) {
+        return
+      }
+      this.searchText += ` ${this.draggingColumn}:`
+    },
   },
   watch: {
     searchText() {

@@ -5,6 +5,8 @@
         class="header"
         :columns.sync="columns"
         :sort-method.sync="sortMethod"
+        @column-drag-start="$emit('column-drag-start', $event)"
+        @column-drag-end="$emit('column-drag-end', $event)"
       />
       <v-progress-linear v-show="processing" :value="progress * 100" />
       <kml-list-item
