@@ -38,7 +38,10 @@
 
 <script>
 const helps = [
-  { code: 'description:温泉', description: 'description に「温泉」が含まれる' },
+  {
+    code: 'description:温泉',
+    description: 'description に「温泉」が含まれる',
+  },
   {
     code: 'description:"WALL HOUSE"',
     description: 'description に「WALL HOUSE」が含まれる',
@@ -47,8 +50,26 @@ const helps = [
     code: 'description:寺|神社|教会',
     description: 'description に「寺」、「神社」、「教会」のいずれかが含まれる',
   },
-  { code: 'lat>35', description: 'lat が 35 を超えている' },
-  { code: 'lng<139.5', description: 'lng が 139.5 未満' },
+  {
+    code: 'description:-博物館',
+    description: 'description に「博物館」が含まれない',
+  },
+  {
+    code: 'description:^$|無し',
+    description: 'description に「無し」が含まれる、もしくは description が空欄である',
+  },
+  {
+    code: 'description: -^$',
+    description: 'description に値が入っている',
+  },
+  {
+    code: 'lat>35',
+    description: 'lat が 35 を超えている',
+  },
+  {
+    code: 'lng<139.5',
+    description: 'lng が 139.5 未満',
+  },
 ]
 
 export default {
@@ -100,7 +121,15 @@ export default {
 
         if (obj.operand === ':') {
           for (const text of obj.value.split('|')) {
-            if (datum[obj.key].match(text)) {
+            const [pattern, converter] = (() => {
+              if (text[0] === '-') {
+                return [text.slice(1), (bool) => !bool]
+              } else {
+                return [text, (bool) => bool]
+              }
+            })()
+            const target = datum[obj.key]
+            if (converter(target.match(pattern))) {
               return true
             }
           }
