@@ -196,7 +196,7 @@ export default {
               .map((column) =>
                 (row[column.name] ?? '')
                   .replaceAll(',', '，')
-                  .replaceAll(/\n|<br>/g, '。')
+                  .replaceAll(/\n|<br>/g, ' 。')
               )
               .join(',')
           )
