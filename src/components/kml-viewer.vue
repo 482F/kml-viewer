@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     createImageSrcs(content) {
-      return [...(content || '').matchAll(/https?:\/\/[^\s:]+jpg/g)].map(
+      return [...(content || '').matchAll(/https?:\/\/[^\s:]+(jpe?g|png)/g)].map(
         (m) => m[0]
       )
     },
