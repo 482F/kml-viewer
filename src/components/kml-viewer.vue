@@ -195,11 +195,16 @@ export default {
           .filter(this.searcher)
           .map((row) =>
             columns
-              .map((column) =>
-                (row[column.name] ?? '')
+              .map((column) => {
+                let result = (row[column.name] ?? '')
                   .replaceAll(',', '，')
+                  .replaceAll(/(\n|<br>)+$/g, '')
                   .replaceAll(/\n|<br>/g, ' 。')
-              )
+                if (column.name === 'name') {
+                  result = result.replaceAll('&', '＆')
+                }
+                return result
+              })
               .join(',')
           )
           .join('\n')
