@@ -1,7 +1,7 @@
 <template>
   <div tabindex="-1" class="kml-list-item" v-intersect="onIntersect">
     <v-list-item
-      v-if="isIntersect"
+      v-if="isIntersect || visibleAll"
       tabindex=""
       :style="{ '--image-height': imageHeight + 'px' }"
     >
@@ -59,6 +59,10 @@ export default {
     imageSrcs: {
       type: Array,
       default: () => [],
+    },
+    visibleAll: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

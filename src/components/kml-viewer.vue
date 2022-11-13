@@ -16,6 +16,7 @@
         :columns="columns"
         :datum="row"
         :image-srcs="createImageSrcs(row.description)"
+        :visible-all="visibleAll"
       />
     </v-list>
   </div>
@@ -56,12 +57,16 @@ export default {
       type: Function,
       default: () => true,
     },
+    visibleAll: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     createImageSrcs(content) {
-      return [...(content || '').matchAll(/https?:\/\/[^\s:]+(jpe?g|png)/g)].map(
-        (m) => m[0]
-      )
+      return [
+        ...(content || '').matchAll(/https?:\/\/[^\s:]+(jpe?g|png)/g),
+      ].map((m) => m[0])
     },
     async parseKml(rawKml) {
       this.processing = true
