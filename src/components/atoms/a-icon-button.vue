@@ -2,7 +2,13 @@
   <span>
     <v-tooltip bottom :disabled="!tooltip">
       <template v-slot:activator="{ on, attrs }">
-        <a-button v-on="on" v-bind="attrs" icon :outlined="false">
+        <a-button
+          v-on="on"
+          v-bind="attrs"
+          icon
+          :outlined="false"
+          @click="$emit('click')"
+        >
           <a-icon :icon="icon" />
         </a-button>
       </template>

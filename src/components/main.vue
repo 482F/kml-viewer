@@ -1,5 +1,5 @@
 <template>
-  <div class="f-main">
+  <div class="f-main" :style="{ '--height': visibleAll ? 'none' : '100vh' }">
     <div class="buttons">
       <a class="version-icon" :href="version.other.link">
         <a-icon-button class="icon current" :icon="version.current.icon" />
@@ -29,6 +29,18 @@
           <div>xlsx をダウンロード</div>
         </button>
       </template>
+      <a-icon-button
+        v-if="visibleAll"
+        class="icon"
+        icon="mdi-eye"
+        @click="() => (visibleAll = false)"
+      />
+      <a-icon-button
+        v-else
+        class="icon"
+        icon="mdi-eye-off"
+        @click="() => (visibleAll = true)"
+      />
     </div>
     <search
       class="search"
@@ -40,6 +52,7 @@
       class="kml-viewer"
       :raw-kml="rawKml"
       :searcher="searcher"
+      :visible-all="visibleAll"
       @column-drag-start="draggingColumn = $event"
       @column-drag-end="draggingColumn = undefined"
     />
@@ -68,6 +81,7 @@ export default {
       fileName: '',
       draggingColumn: undefined,
       searcher: () => true,
+      visibleAll: false,
     }
   },
   computed: {
@@ -135,7 +149,7 @@ export default {
 .f-main {
   padding: 2rem;
   width: 100vw;
-  height: 100vh;
+  height: var(--height);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
