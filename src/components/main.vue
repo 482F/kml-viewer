@@ -41,6 +41,11 @@
         icon="mdi-eye-off"
         @click="() => (visibleAll = true)"
       />
+      <a-icon-button
+        class="icon"
+        icon="mdi-web"
+        @click="() => $refs.kmlViewer.getGeoInfos()"
+      />
     </div>
     <search
       class="search"

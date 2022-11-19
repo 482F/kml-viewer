@@ -30,6 +30,15 @@ import * as XLSX from 'xlsx'
 import KmlListHeader from './kml-list-header.vue'
 import KmlListItem from './kml-list-item.vue'
 
+async function getGeoInfo(lat, lng) {
+  await new Promise((resolve) => setTimeout(resolve, 1100))
+  return await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+  )
+    .then((r) => r.json())
+    .catch(() => undefined)
+}
+
 export default {
   name: 'kml-viewer',
   components: {
@@ -160,13 +169,7 @@ export default {
           }
         }
 
-        const columns = Array.from(
-          new Set(rows.map((datum) => Object.keys(datum)).flat())
-        ).map((name) => ({
-          name,
-          width: 100,
-          show: true,
-        }))
+        const columns = this.calcColumns(rows)
 
         rows.forEach((row) => {
           for (const column of columns) {
@@ -182,6 +185,38 @@ export default {
       } catch (e) {
         console.error(e)
       }
+      this.processing = false
+    },
+    calcColumns(rows) {
+      return Array.from(
+        new Set(rows.map((datum) => Object.keys(datum)).flat())
+      ).map((name) => {
+        const existingColumn = this.columns.find(
+          (column) => column.name === name
+        )
+        return (
+          existingColumn ?? {
+            name,
+            width: 100,
+            show: true,
+          }
+        )
+      })
+    },
+    async getGeoInfos() {
+      this.processing = true
+      this.progress = 0
+      const targets = this.rows.filter(this.searcher)
+      let i = 1
+      for (const target of targets) {
+        if (!target.lat || !target.lng) {
+          continue
+        }
+        const info = await getGeoInfo(target.lat, target.lng)
+        Object.assign(target, info?.address ?? {})
+        this.progress = i++ / targets.length
+      }
+      this.columns = this.calcColumns(this.rows)
       this.processing = false
     },
     toSheet() {
