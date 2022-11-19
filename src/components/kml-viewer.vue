@@ -5,6 +5,8 @@
         class="header"
         :columns.sync="columns"
         :sort-method.sync="sortMethod"
+        :excluded-column-map="excludedColumnMap"
+        @update:excluded-column-map="updateExcludedColumnMap"
         @column-drag-start="$emit('column-drag-start', $event)"
         @column-drag-end="$emit('column-drag-end', $event)"
       />
@@ -17,6 +19,7 @@
         :datum="row"
         :image-srcs="createImageSrcs(row.description)"
         :visible-all="visibleAll"
+        :excluded-column-map="excludedColumnMap"
       />
     </v-list>
   </div>
@@ -49,6 +52,7 @@ export default {
     return {
       rows: [],
       columns: [],
+      excludedColumnMap: {},
       processing: false,
       progress: 0,
       sortMethod: {
@@ -71,7 +75,19 @@ export default {
       default: false,
     },
   },
+  mounted() {
+    this.excludedColumnMap = JSON.parse(
+      localStorage.getItem('482f--kml-viewer--excludedColumnMap') ?? '{}'
+    )
+  },
   methods: {
+    updateExcludedColumnMap(newMap) {
+      this.excludedColumnMap = newMap
+      localStorage.setItem(
+        '482f--kml-viewer--excludedColumnMap',
+        JSON.stringify(newMap)
+      )
+    },
     createImageSrcs(content) {
       return [
         ...(content || '').matchAll(/https?:\/\/[^\s:]+(jpe?g|png)/g),

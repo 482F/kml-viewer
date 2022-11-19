@@ -15,7 +15,7 @@
             <resizer
               v-for="(column, i) of columns"
               :key="column.name"
-              v-show="column.show"
+              v-show="!excludedColumnMap[column.name]"
               :class="{ 'is-name': i === 0 }"
               direction="right"
               @input="(value) => (column.width = value)"
@@ -40,7 +40,12 @@
                 <v-icon
                   class="icon show-on-hover"
                   v-else
-                  @click.stop="column.show = false"
+                  @click.stop="
+                    $emit('update:excluded-column-map', {
+                      ...excludedColumnMap,
+                      [column.name]: true,
+                    })
+                  "
                 >
                   mdi-close
                 </v-icon>
@@ -59,13 +64,18 @@
           <div class="kml-list-header-menu">
             <v-list>
               <v-list-item
-                v-for="column of columns"
-                :key="column.name"
-                v-show="!column.show"
-                @click="column.show = true"
+                v-for="columnName of Object.keys(excludedColumnMap)"
+                :key="columnName"
+                @click="
+                  () => {
+                    const newMap = { ...excludedColumnMap }
+                    delete newMap[columnName]
+                    $emit('update:excluded-column-map', newMap)
+                  }
+                "
                 :ripple="false"
               >
-                {{ column.name }}
+                {{ columnName }}
               </v-list-item>
             </v-list>
           </div>
@@ -94,6 +104,10 @@ export default {
   props: {
     columns: {
       type: Array,
+      required: true,
+    },
+    excludedColumnMap: {
+      type: Object,
       required: true,
     },
     sortMethod: {

@@ -6,8 +6,8 @@
       :style="{ '--image-height': imageHeight + 'px' }"
     >
       <kml-list-cell
-        v-for="({ name, width, show }, i) of columns"
-        v-show="show"
+        v-for="({ name, width }, i) of columns"
+        v-show="!excludedColumnMap[name]"
         :class="{ 'is-name': i === 0 }"
         :key="name"
         :width="width"
@@ -50,6 +50,10 @@ export default {
   props: {
     columns: {
       type: Array,
+      required: true,
+    },
+    excludedColumnMap: {
+      type: Object,
       required: true,
     },
     datum: {
