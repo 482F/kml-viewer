@@ -92,7 +92,7 @@ export default {
         if (!inner) {
           return
         }
-        this.isOverflowed = inner.clientWidth !== inner.scrollWidth
+        this.isOverflowed = inner.clientHeight !== inner.scrollHeight
       }, 100)
     ).observe(this.$refs.inner)
   },
@@ -110,9 +110,11 @@ export default {
   display: flex;
   align-items: center;
   .inner {
-    text-overflow: ellipsis;
+    display: -webkit-box;
     overflow: hidden;
-    white-space: nowrap;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
   }
 }
 </style>
